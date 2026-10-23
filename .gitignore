@@ -1,0 +1,38 @@
+# Account records, credentials, browser profiles and backups
+.data/
+**/.data/
+runtime-profiles/
+profiles/
+backups/
+*.dpapi
+Cookies
+Cookies-journal
+Login Data
+Login Data-journal
+Local State
+Preferences
+Secure Preferences
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Dependencies and generated diagnostics
+node_modules/
+*.log
+logs/
+screenshots/
+test-results/
+playwright-report/
+coverage/
+*.har
+*.trace
+*.zip
+*.tmp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>AI Studio 账号台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="AI Studio 账号台首页"><span class="brand-mark">A<span>•</span></span><span>AI Studio <strong>账号台</strong></span></a>
+      <div class="header-actions"><button class="button secondary" id="manage-network">网络设置</button><button class="button secondary" id="manage-key">管理本机 Key</button><span class="local-pill"><i></i> 本机保存</span></div>
+    </header>
+    <section class="intro">
+      <div><p class="eyebrow">BACKGROUND CHROMIUM WORKSPACE</p><h1>账号在后台，<br>反代持续在线。</h1><p class="lead">独立 Chromium 子进程，无需常驻浏览器窗口。<br>加载网页、载入 Key、hi 激活、心跳与云端续推。</p></div>
+      <aside class="stage-card"><span class="step-number">03</span><div><span class="stage-label">无窗口运行模式</span><h2>网页可关，启动窗口保持打开</h2><p>普通窗口手动登录 → 关闭该账号窗口保存会话 → 转入后台。关闭启动窗口将停止所有账号内核。</p></div></aside>
+    </section>
+    <section class="summary" aria-label="账号概览">
+      <div><span id="account-count">—</span><p>可用账号环境</p></div>
+      <div><span id="reuse-count">—</span><p>后台运行中</p></div>
+      <div><span id="key-count">—</span><p>反代 Key 保险箱</p></div>
+      <p class="summary-note">Key 使用当前 Windows 用户加密保存。<br>运行日志不记录完整 Key、Cookie 或请求头。</p>
+    </section>
+    <section class="accounts-section">
+      <div class="section-heading"><div><h2>我的账号</h2><p>每个账号独立登录、独立保存；不导入或复制现有 Chrome 资料。</p></div><div class="toolbar"><button class="button primary" id="add-button">＋ 新建独立环境</button></div></div>
+      <div class="batch-toolbar"><button class="button primary" id="start-all">全部后台启动</button><button class="button secondary" id="stop-all">全部停止</button><span>状态每 5 秒更新 · 电脑睡眠或账号台服务退出后不会运行</span></div>
+      <div class="list-controls"><label><input type="checkbox" id="show-archived"> 显示已归档</label><button class="text-button" id="refresh-button">刷新列表</button></div>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <div id="account-list" class="account-grid" aria-live="polite"></div>
+      <div class="empty-state" id="empty-state" hidden><span>＋</span><h3>准备你的第一个账号</h3><p>新建专属环境，手动完成 Google 登录，再一键转入后台。</p><button class="button primary" id="empty-add">新建环境并登录</button></div>
+    </section>
+    <footer><p><span class="footer-dot"></span> 账号资料仅保存在本机，Key 使用当前 Windows 用户加密。</p><details><summary>保存位置与安全边界</summary><p id="data-path"></p><p>不读取现有 Chrome 的账号、密码或会话。每个环境从空白开始，由你手动登录；本机持久目录保存此环境自己的登录态。旧导入记录仅保留在备份中，不再自动出现。</p><p>开启云端续推会将此运行账号的 Google 登录 Cookie 发送给 catiecli.sukaka.top（包括 HttpOnly）。这些 Cookie 等同登录凭证，请仅在信任该后端时开启。关闭控制台标签页不影响后台；关闭账号台服务、系统睡眠或关机会中断。</p></details></footer>
+  </main>
+  <dialog id="account-dialog"><form id="account-form" autocomplete="off"><div class="dialog-heading"><div><p class="eyebrow">ACCOUNT DETAILS</p><h2 id="dialog-title">新建独立环境</h2></div><button type="button" class="close-button" data-close="account-dialog" aria-label="关闭">×</button></div><input type="hidden" id="account-id"><label>账号名称<input id="account-label" maxlength="60" required placeholder="例如：主账号、工作账号"></label><label>Google 邮箱 <span class="optional">选填，登录后尝试识别</span><input id="account-email" type="email" maxlength="254" placeholder="name@example.com"></label><label id="browser-field">运行内核<select id="account-browser"></select></label><label>反代 Key <span class="optional" id="key-optional">选填，也可以之后补充</span><input id="account-key" type="password" maxlength="512" autocomplete="new-password" spellcheck="false" placeholder="cat-…"></label><p class="field-help" id="key-help">留空使用已保存的共享 Key；密码和验证码只在 Google 页面手动填写。</p><label class="check-setting" id="create-login-field"><input type="checkbox" id="create-login" checked> 保存后打开此环境的登录窗口</label><div class="form-error" id="form-error" role="alert" hidden></div><div class="dialog-actions"><button type="button" class="button secondary" data-close="account-dialog">取消</button><button type="submit" class="button primary" id="save-button">保存账号</button></div></form></dialog>
+  <dialog id="master-key-dialog"><form id="master-key-form" autocomplete="off"><div class="dialog-heading"><div><p class="eyebrow">LOCAL KEY VAULT</p><h2>保存反代 Key</h2></div><button type="button" class="close-button" data-close="master-key-dialog" aria-label="关闭">×</button></div><p class="dialog-description">使用当前 Windows 账户 DPAPI 加密保存。后台启动时只在内存中传入执行器，不写入启动参数或账号清单。运行中更新 Key 后，请重启对应账号使其生效。</p><label>cat- Key<input id="master-key-input" type="password" maxlength="512" required autocomplete="new-password" spellcheck="false" placeholder="cat-…"></label><p class="field-help" id="master-key-status"></p><div class="form-error" id="master-key-error" role="alert" hidden></div><div class="dialog-actions"><button type="button" class="button secondary" data-close="master-key-dialog">取消</button><button type="submit" class="button primary" id="master-key-save">加密保存</button></div></form></dialog>
+  <dialog id="runtime-dialog" class="wide-dialog"><div class="dialog-heading"><div><p class="eyebrow">LIVE RUNTIME</p><h2 id="runtime-title">运行详情</h2></div><button class="close-button" data-close="runtime-dialog" aria-label="关闭">×</button></div><p id="runtime-detail-status" class="field-help"></p><div class="detail-tabs"><button class="button secondary" id="refresh-logs">刷新日志</button><button class="button secondary" id="clear-logs">清空日志</button><button class="button secondary" id="preview-page">查看后台页面</button><button class="button secondary" id="reload-page">重新载入页面</button></div><pre id="runtime-logs" class="runtime-logs"></pre><img id="runtime-preview" alt="后台页面预览，可能包含个人账号信息" hidden><p id="runtime-error" class="form-error" hidden></p></dialog>
+  <dialog id="settings-dialog"><form id="settings-form"><div class="dialog-heading"><h2>后台运行设置</h2><button type="button" class="close-button" data-close="settings-dialog">×</button></div><input type="hidden" id="settings-account"><label>云端续推间隔（分钟）<input id="settings-interval" type="number" min="10" max="1440" required></label><label class="check-setting"><input type="checkbox" id="settings-hi"> 页面加载后自动发送 hi</label><label class="check-setting"><input type="checkbox" id="settings-push"> 自动上传此账号的 Google 登录 Cookie 到 catiecli</label><label class="check-setting"><input type="checkbox" id="settings-restart"> 内核异常退出后尝试恢复（最多 3 次）</label><p class="field-help">设置在下次启动或重启时生效。心跳约 20 秒一次；自动发送 hi 只用于页面激活，不循环发消息。不会阻止系统睡眠或绕过 Google 验证。</p><div class="dialog-actions"><button type="button" class="button secondary" data-close="settings-dialog">取消</button><button class="button primary" type="submit">保存设置</button></div></form></dialog>
+  <dialog id="network-dialog"><form id="network-form"><div class="dialog-heading"><h2>网络设置</h2><button type="button" class="close-button" data-close="network-dialog" aria-label="关闭">×</button></div><p class="dialog-description">所有账号共用此设置，保存后在下次启动或重启账号时生效。</p><label>连接方式<select id="network-mode"><option value="system">跟随系统代理</option><option value="custom">指定代理</option><option value="direct">直接连接</option></select></label><label id="network-server-field">代理地址<input id="network-server" maxlength="512" placeholder="http://127.0.0.1:10090" spellcheck="false" autocomplete="off"></label><p class="field-help">指定代理同时用于网页、反代心跳和云端续推。请保持本机代理程序开启；代理端口改变后需在这里更新。支持 HTTP、HTTPS 和 SOCKS5，无需更改 Windows 全局代理。</p><div class="form-error" id="network-error" role="alert" hidden></div><div class="dialog-actions"><button type="button" class="button secondary" data-close="network-dialog">取消</button><button type="submit" class="button primary" id="network-save">保存网络设置</button></div></form></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>
